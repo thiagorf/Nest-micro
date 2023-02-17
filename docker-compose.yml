@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.9.28-alpine
+    ports:
+      - 5672:5672
+  
+  orders:
+    container_name: orders
+    build:
+      dockerfile: ./apps/orders/Dockerfile
+    env_file:
+      - ./apps/orders/prisma/.env
+    depends_on:
+      - ordersdb
+      - rabbitmq
+    volumes:
+      - .:/usr/app
+      - /usr/app/node_modules
+    ports:
+      - 3000:3000
+  ordersdb:
+    container_name: ordersdb
+    image: postgres:13-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ordersdb
+  billing:
+    container_name: billing
+    build:
+      dockerfile: ./apps/billing/Dockerfile
+    env_file:
+      - ./apps/billing/prisma/.env
+    depends_on:
+        billingdb:
+          condition: service_healthy
+        rabbitmq:
+          condition: service_started
+    volumes:
+      - .:/usr/app
+      - /usr/app/node_modules
+  billingdb:
+    container_name: billingdb
+    image: postgres:13-alpine
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: billingdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
