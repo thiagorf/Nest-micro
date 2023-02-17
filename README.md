@@ -1,6 +1,6 @@
 ## Observations
 
-Each service can run independently but requires an order of steps to work.
+Each service can run independently but requires an order of steps to work(when new stuff is added).
 
 1. generate the prisma client each time you make some changes in the schema
 2. generate the migrations
