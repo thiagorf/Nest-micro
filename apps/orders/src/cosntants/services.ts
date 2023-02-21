@@ -1,1 +1,1 @@
-export const BILLING_SERVICE = 'Billing';
+export const BILLING_SERVICE = 'BILLING';

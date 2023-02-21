@@ -141,7 +141,16 @@ const config = {
     "config": {
       "engineType": "library"
     },
-    "binaryTargets": [],
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-1.1.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "linux-musl"
+      }
+    ],
     "previewFeatures": [],
     "isCustomOutput": true
   },
@@ -177,5 +186,8 @@ Object.assign(exports, Prisma)
 
 path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
 path.join(process.cwd(), "apps/billing/generated/libquery_engine-debian-openssl-1.1.x.so.node")
+
+path.join(__dirname, "libquery_engine-linux-musl.so.node");
+path.join(process.cwd(), "apps/billing/generated/libquery_engine-linux-musl.so.node")
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "apps/billing/generated/schema.prisma")
