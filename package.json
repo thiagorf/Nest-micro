@@ -30,7 +30,8 @@
     "dev:billing": "docker compose up -d && yarn create:billing && yarn nest start billing",
     "postdev:orders": "yarn container:stop",
     "create:migrations": "yarn create:orders && yarn create:billing",
-    "micro:start": "docker compose up -d && yarn create:migrations && yarn nest start --watch"
+    "micro:start": "docker compose up -d && yarn create:migrations && yarn nest start --watch",
+	"start:micro": "docker compose up"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
