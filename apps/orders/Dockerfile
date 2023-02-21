@@ -9,3 +9,6 @@ RUN npm install
 
 COPY ./apps/orders/ ./
 
+#RUN npx prisma migrate deploy --schema ./prisma/schema.prisma
+
+CMD ["npm", "run", "nest", "start:dev", "order"]
