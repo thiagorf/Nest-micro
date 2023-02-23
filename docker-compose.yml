@@ -28,6 +28,18 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: billingdb
     
+  gateway:
+    container_name: api-gateway
+    build:
+      dockerfile: ./apps/api-gateway/Dockerfile
+    env_file:
+      - ./apps/api-gateway/prisma/.env
+    command: npm run start:dev api-gateway
+    volumes:
+      - .:/usr/app
+      - node:/usr/app/node_modules
+    ports:
+      - 3000:3000  
 
   orders:
     container_name: orders
@@ -40,12 +52,13 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@ordersdb:5432/ordersdb?schema=public
     depends_on:
       - ordersdb
-      - rabbitmq 
+      - rabbitmq
+      - api-gateway 
     volumes:
       - .:/usr/app
       - node:/usr/app/node_modules
     ports:
-      - 3000:3000
+      - 3001:3001
   
   billing:
     container_name: billing
@@ -59,6 +72,7 @@ services:
     depends_on:
       - billingdb
       - rabbitmq
+      - api-gateway
     volumes:
       - .:/usr/app
       - node:/usr/app/node_modules
