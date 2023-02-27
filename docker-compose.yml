@@ -55,7 +55,10 @@ services:
     container_name: orders
     build:
       dockerfile: ./apps/orders/Dockerfile
-    command: sh -c "npx prisma migrate deploy --schema ./prisma/schema.prisma  && npm run start:dev orders"
+    command: sh -c 
+      "npx prisma generate
+      && npx prisma migrate deploy --schema ./prisma/schema.prisma
+      && npm run start:dev orders"
     env_file:
       - ./apps/orders/prisma/.env
     environment:

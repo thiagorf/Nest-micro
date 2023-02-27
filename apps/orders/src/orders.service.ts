@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { BILLING_SERVICE } from './cosntants/services';
+import { BILLING_SERVICE } from './constants/services';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PrismaService } from './prisma/prisma.service';
 import { lastValueFrom } from 'rxjs';

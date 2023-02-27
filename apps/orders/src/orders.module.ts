@@ -2,7 +2,7 @@ import { RmqModule } from '@app/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
-import { BILLING_SERVICE } from './cosntants/services';
+import { BILLING_SERVICE } from './constants/services';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 import { PrismaModule } from './prisma/prisma.module';
