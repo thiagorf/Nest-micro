@@ -8,6 +8,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY ./apps/api-gateway/ ./
+COPY tsconfig.json ./
 
 
 CMD ["npm", "run", "nest", "start:dev", "api-gateway"]

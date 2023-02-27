@@ -16,6 +16,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: ordersdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     
 
   billingdb:
@@ -27,6 +32,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: billingdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     
   gateway:
     container_name: api-gateway
@@ -36,8 +46,8 @@ services:
       - ./apps/api-gateway/prisma/.env
     command: npm run start:dev api-gateway
     volumes:
-      - .:/usr/app
-      - node:/usr/app/node_modules
+      - ./apps/api-gateway/src:/usr/app/src
+      - /usr/app/node_modules
     ports:
       - 3000:3000  
 
@@ -45,18 +55,21 @@ services:
     container_name: orders
     build:
       dockerfile: ./apps/orders/Dockerfile
-    command: sh -c "npx prisma migrate deploy --schema ./apps/orders/prisma/schema.prisma  && npm run start:dev orders"
+    command: sh -c "npx prisma migrate deploy --schema ./prisma/schema.prisma  && npm run start:dev orders"
     env_file:
       - ./apps/orders/prisma/.env
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@ordersdb:5432/ordersdb?schema=public
     depends_on:
-      - ordersdb
-      - rabbitmq
-      - gateway 
+      ordersdb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      gateway:
+        condition: service_started 
     volumes:
-      - .:/usr/app
-      - node:/usr/app/node_modules
+      - ./apps/orders/src:/usr/app/src
+      - /usr/app/node_modules
     ports:
       - 3001:3001
   
@@ -64,18 +77,20 @@ services:
     container_name: billing
     build:
       dockerfile: ./apps/billing/Dockerfile
-    command: sh -c "npx prisma migrate deploy --schema ./apps/billing/prisma/schema.prisma && npm run start:dev billing"
+    command: sh -c "npx prisma migrate deploy --schema ./prisma/schema.prisma && npm run start:dev billing"
     env_file:
       - ./apps/billing/prisma/.env
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@billingdb:5432/billingdb?schema=public
     depends_on:
-      - billingdb
-      - rabbitmq
-      - gateway
+      billingdb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      gateway:
+        condition: service_started
     volumes:
-      - .:/usr/app
-      - node:/usr/app/node_modules
+      - ./apps/billing/src:/usr/app/src
+      - /usr/app/node_modules
   
-volumes:
-  node:
+
