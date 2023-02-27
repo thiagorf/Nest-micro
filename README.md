@@ -1,3 +1,7 @@
+## Migrating from nest/monorepo to lerna
+
+[lerna-monorepo](https://github.com/thiagorf/Nest-micro/tree/lerna-monorepo) branch
+
 ## Observations
 
 Each service can run independently but requires an order of steps to work(when new stuff is added).
