@@ -2,13 +2,13 @@ FROM node:16-alpine3.16 as dev
 
 WORKDIR /usr/app
 
-COPY ./apps/api-gateway/prisma ./prisma/
-COPY package*.json ./
+COPY ./packages/api-gateway/prisma ./prisma/
+COPY ./packages/api-gateway/package*.json ./
 
 RUN npm install
+RUN npm install -g @nestjs/cli
 
-COPY ./apps/api-gateway/ ./
-COPY tsconfig.json ./
+COPY ./packages/api-gateway/ ./
 
 
-CMD ["npm", "run", "nest", "start:dev", "api-gateway"]
+CMD ["npm", "run", "start:dev"]
