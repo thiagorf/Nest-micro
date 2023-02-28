@@ -41,12 +41,12 @@ services:
   gateway:
     container_name: api-gateway
     build:
-      dockerfile: ./apps/api-gateway/Dockerfile
+      dockerfile: ./packages/api-gateway/Dockerfile
     env_file:
-      - ./apps/api-gateway/prisma/.env
-    command: npm run start:dev api-gateway
+      - ./packages/api-gateway/prisma/.env
+    command: npm run start:dev
     volumes:
-      - ./apps/api-gateway/src:/usr/app/src
+      - ./packages/api-gateway/src:/usr/app/src
       - /usr/app/node_modules
     ports:
       - 3000:3000  
@@ -54,13 +54,13 @@ services:
   orders:
     container_name: orders
     build:
-      dockerfile: ./apps/orders/Dockerfile
+      dockerfile: ./packages/orders/Dockerfile
     command: sh -c 
-      "npx prisma generate
+      " npx prisma generate
       && npx prisma migrate deploy --schema ./prisma/schema.prisma
-      && npm run start:dev orders"
+      && npm run start:dev"
     env_file:
-      - ./apps/orders/prisma/.env
+      - ./packages/orders/prisma/.env
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@ordersdb:5432/ordersdb?schema=public
     depends_on:
@@ -71,7 +71,7 @@ services:
       gateway:
         condition: service_started 
     volumes:
-      - ./apps/orders/src:/usr/app/src
+      - ./packages/orders/src:/usr/app/src
       - /usr/app/node_modules
     ports:
       - 3001:3001
@@ -79,10 +79,13 @@ services:
   billing:
     container_name: billing
     build:
-      dockerfile: ./apps/billing/Dockerfile
-    command: sh -c "npx prisma migrate deploy --schema ./prisma/schema.prisma && npm run start:dev billing"
+      dockerfile: ./packages/billing/Dockerfile
+    command: sh -c 
+      "npx prisma generate
+      && npx prisma migrate deploy --schema ./prisma/schema.prisma 
+      && npm run start:dev"
     env_file:
-      - ./apps/billing/prisma/.env
+      - ./packages/billing/prisma/.env
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@billingdb:5432/billingdb?schema=public
     depends_on:
@@ -93,7 +96,7 @@ services:
       gateway:
         condition: service_started
     volumes:
-      - ./apps/billing/src:/usr/app/src
+      - ./packages/billing/src:/usr/app/src
       - /usr/app/node_modules
   
 
