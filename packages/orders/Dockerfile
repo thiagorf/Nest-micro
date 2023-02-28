@@ -2,15 +2,12 @@ FROM node:16-alpine3.16 as dev
 
 WORKDIR /usr/app
 
-COPY ./apps/orders/prisma ./prisma/
-COPY ./libs/common ./common/
-COPY package*.json ./
+COPY ./packages/orders/prisma ./prisma/
+COPY ./packages/orders/package*.json ./
 
+RUN npm cache clean --force
 RUN npm install
 
-COPY ./apps/orders/ ./
-COPY tsconfig.json ./
+COPY ./packages/orders/ ./
 
-#RUN npx prisma migrate deploy --schema ./prisma/schema.prisma
-
-CMD ["npm", "run", "nest", "start:dev", "order"]
+CMD ["npm", "run", "start:dev"]
