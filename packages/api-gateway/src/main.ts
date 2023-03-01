@@ -10,9 +10,9 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.use(
-    '/orders/**',
+    '/orders',
     createProxyMiddleware({
-      target: configService.get('ORDERS_SERVICE_URI'),
+      target: 'http://localhost:3001',
       changeOrigin: true,
     }),
   );

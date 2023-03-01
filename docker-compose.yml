@@ -46,7 +46,7 @@ services:
       - ./packages/api-gateway/prisma/.env
     command: npm run start:dev
     volumes:
-      - ./packages/api-gateway/src:/usr/app/src
+      - ./packages/api-gateway:/usr/app
       - /usr/app/node_modules
     ports:
       - 3000:3000  
@@ -56,8 +56,7 @@ services:
     build:
       dockerfile: ./packages/orders/Dockerfile
     command: sh -c 
-      " npx prisma generate
-      && npx prisma migrate deploy --schema ./prisma/schema.prisma
+      "npx prisma migrate deploy --schema ./prisma/schema.prisma
       && npm run start:dev"
     env_file:
       - ./packages/orders/prisma/.env
@@ -68,10 +67,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_started
-      gateway:
-        condition: service_started 
     volumes:
-      - ./packages/orders/src:/usr/app/src
+      - ./packages/orders:/usr/app
       - /usr/app/node_modules
     ports:
       - 3001:3001
@@ -81,8 +78,7 @@ services:
     build:
       dockerfile: ./packages/billing/Dockerfile
     command: sh -c 
-      "npx prisma generate
-      && npx prisma migrate deploy --schema ./prisma/schema.prisma 
+      "npx prisma migrate deploy --schema ./prisma/schema.prisma 
       && npm run start:dev"
     env_file:
       - ./packages/billing/prisma/.env
@@ -93,10 +89,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_started
-      gateway:
-        condition: service_started
     volumes:
-      - ./packages/billing/src:/usr/app/src
+      - ./packages/billing:/usr/app
       - /usr/app/node_modules
   
 

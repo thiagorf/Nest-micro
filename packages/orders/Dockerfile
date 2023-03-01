@@ -10,4 +10,6 @@ RUN npm install
 
 COPY ./packages/orders/ ./
 
+USER node
+
 CMD ["npm", "run", "start:dev"]
