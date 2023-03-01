@@ -4,7 +4,9 @@ import { ApiGatewayModule } from './api-gateway.module';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ApiGatewayModule);
+  const app = await NestFactory.create(ApiGatewayModule, {
+    bodyParser: false,
+  });
   const configService = app.get(ConfigService);
 
   app.use(

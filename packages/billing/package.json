@@ -17,7 +17,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+	"generate": "yarn prisma generate"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -25,6 +26,7 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/microservices": "^9.3.9",
     "@nestjs/platform-express": "^9.0.0",
+    "@prisma/client": "^4.11.0",
     "amqp-connection-manager": "^4.1.11",
     "amqplib": "^0.10.3",
     "joi": "^17.8.3",
@@ -54,6 +56,11 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.1.1",
     "typescript": "^4.7.4"
+  },
+  "workspaces": {
+    "nohoist": [
+      "**/@prisma/*"
+    ]
   },
   "jest": {
     "moduleFileExtensions": [
