@@ -12,7 +12,8 @@ async function bootstrap() {
   app.use(
     '/orders',
     createProxyMiddleware({
-      target: 'http://localhost:3001',
+      target: 'http://orders:3001',
+      secure: false,
       changeOrigin: true,
     }),
   );
