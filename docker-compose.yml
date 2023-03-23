@@ -17,11 +17,10 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: ordersdb
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
-    
 
   billingdb:
     container_name: billingdb
@@ -33,11 +32,26 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: billingdb
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
-    
+
+  authdb:
+    container_name: authdb
+    image: postgres:13-alpine
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: authdb
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   gateway:
     container_name: api-gateway
     build:
@@ -49,14 +63,14 @@ services:
       - ./packages/api-gateway:/usr/app
       - /usr/app/node_modules
     ports:
-      - 3000:3000  
+      - 3000:3000
 
   orders:
     container_name: orders
     build:
       dockerfile: ./packages/orders/Dockerfile
-    command: sh -c 
-      "npx prisma migrate deploy --schema ./prisma/schema.prisma
+    command: sh -c
+      "npx prisma generate && npx prisma migrate deploy --schema ./prisma/schema.prisma
       && npm run start:dev"
     env_file:
       - ./packages/orders/prisma/.env
@@ -72,13 +86,13 @@ services:
       - /usr/app/node_modules
     ports:
       - 3001:3001
-  
+
   billing:
     container_name: billing
     build:
       dockerfile: ./packages/billing/Dockerfile
-    command: sh -c 
-      "npx prisma migrate deploy --schema ./prisma/schema.prisma 
+    command: sh -c
+      "npx prisma generate && npx prisma migrate deploy --schema ./prisma/schema.prisma
       && npm run start:dev"
     env_file:
       - ./packages/billing/prisma/.env
@@ -92,4 +106,21 @@ services:
     volumes:
       - ./packages/billing:/usr/app
       - /usr/app/node_modules
-  
+
+  auth:
+    container_name: auth
+    build:
+      dockerfile: ./packages/auth/Dockerfile
+    command: sh -c
+      "npx prisma generate && npx prisma migrate deploy --schema ./prisma/schema.prisma
+      && npm run start:dev"
+    env_file:
+      - ./packages/auth/prisma/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@authdb:5432/authdb?schema=public
+    depends_on:
+      authdb:
+        condition: service_healthy
+    volumes:
+      - ./packages/auth:/usr/app
+      - /usr/app/node_modules
