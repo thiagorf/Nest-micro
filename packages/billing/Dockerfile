@@ -10,8 +10,6 @@ RUN npm install
 
 COPY ./packages/billing/ ./
 
-RUN npx prisma generate
-
 USER node
 
 CMD ["npm", "run", "start:dev"]

@@ -9,8 +9,6 @@ RUN npm install
 
 COPY ./packages/auth/ ./
 
-RUN npx prisma generate
-
 USER node
 
 CMD ["npm", "run", "start:dev"]

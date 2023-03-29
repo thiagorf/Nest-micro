@@ -27,6 +27,14 @@ export class OrdersService {
     return order;
   }
 
+  async getOneOrder(id: number) {
+    return await this.prismaService.orders.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
   async getBillings() {
     const a = await lastValueFrom(
       this.billingService.emit('order_billing_retrieved', {}),

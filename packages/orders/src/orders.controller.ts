@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrdersService } from './orders.service';
 
@@ -9,6 +9,11 @@ export class OrdersController {
   @Get()
   getOrders() {
     return this.ordersService.getOrders();
+  }
+
+  @Get(':id')
+  getOneOrder(@Param('id') id: string) {
+    return this.ordersService.getOneOrder(+id);
   }
 
   @Post()

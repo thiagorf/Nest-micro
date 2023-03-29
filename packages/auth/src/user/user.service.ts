@@ -39,7 +39,6 @@ export class UserService {
         email,
       },
     });
-
     if (!userExists) {
       throw new Error(INVALID);
     }
