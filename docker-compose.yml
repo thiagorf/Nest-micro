@@ -61,6 +61,7 @@ services:
       - 127.0.0.1:8444:8444
     networks:
       - kong-net
+      - ordering
 
   konga:
     container_name: konga
@@ -74,7 +75,7 @@ services:
       DB_USER: kong
       DB_PASSWORD: kong
       NODE_ENV: development
-      KONGA_HOOK_TIMEOUT: 10000
+      KONGA_HOOK_TIMEOUT: 120000
     ports:
       - 9000:1337
     depends_on:
@@ -82,8 +83,11 @@ services:
         condition: service_healthy
       kong-migrations:
         condition: service_started
+      orders:
+        condition: service_started
     networks:
       - kong-net
+      - ordering
 
   rabbitmq:
     container_name: rabbitmq
@@ -105,6 +109,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - ordering
 
   billingdb:
     container_name: billingdb
@@ -170,6 +176,8 @@ services:
       - /usr/app/node_modules
     ports:
       - 3001:3001
+    networks:
+      - ordering
 
   billing:
     container_name: billing
@@ -212,5 +220,7 @@ services:
 networks:
   kong-net:
     external: true
+  ordering:
+    driver: bridge
 volumes:
   kongdata:
