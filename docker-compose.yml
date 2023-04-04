@@ -1,6 +1,40 @@
 version: '3.8'
 
 services:
+  keycloak-database:
+    container_name: keycloak-database
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: kc
+      POSTGRES_PASSWORD: kc
+    ports:
+      - 5437:5432
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kc']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - kc
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:21.0.2
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      DB_VENDOR: postgres
+      DB_PORT: 5437
+      DB_USER: kc
+      DB_PASSWORD: kc
+    ports:
+      - 8080:8080
+    depends_on:
+      keycloak-database:
+        condition: service_healthy
+    networks:
+      - kc
+      - ordering
   kong-database:
     container_name: kong-database
     image: postgres:9.6
@@ -141,19 +175,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  gateway:
-    container_name: api-gateway
-    build:
-      dockerfile: ./packages/api-gateway/Dockerfile
-    env_file:
-      - ./packages/api-gateway/prisma/.env
-    command: npm run start:dev
-    volumes:
-      - ./packages/api-gateway:/usr/app
-      - /usr/app/node_modules
-    ports:
-      - 3000:3000
+    networks:
+      - ordering
 
   orders:
     container_name: orders
@@ -207,7 +230,7 @@ services:
       "npx prisma generate && npx prisma migrate deploy --schema ./prisma/schema.prisma
       && npm run start:dev"
     env_file:
-      - ./packages/auth/prisma/.env
+      - ./packages/auth/prisma/.env.development
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@authdb:5432/authdb?schema=public
     depends_on:
@@ -216,11 +239,15 @@ services:
     volumes:
       - ./packages/auth:/usr/app
       - /usr/app/node_modules
+    networks:
+      - ordering
 
 networks:
   kong-net:
     external: true
   ordering:
+    driver: bridge
+  kc:
     driver: bridge
 volumes:
   kongdata:

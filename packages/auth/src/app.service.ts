@@ -1,64 +1,56 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from './user/user.service';
-import { compare } from 'bcrypt';
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { lastValueFrom, map } from 'rxjs';
+import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-import { CREDENTIALS_MISMATCH } from './constants/exceptions';
-import { v4 } from 'uuid';
-import { Cache } from 'cache-manager';
+import { OpenIdToken } from './interfaces/openid-token.interface';
 
 @Injectable()
 export class AppService {
   constructor(
-    private jwtService: JwtService,
-    private userService: UserService,
-    @Inject(CACHE_MANAGER) private cache: Cache,
+    private httpService: HttpService,
+    private configService: ConfigService,
   ) {}
 
-  async signIn(loginDto: LoginDto) {
-    const user = await this.userService.findUserByEmail(loginDto.email);
-
-    const matchPassword = await compare(loginDto.password, user.password);
-
-    if (!matchPassword) {
-      throw new Error(CREDENTIALS_MISMATCH);
-    }
-
-    const token = this.jwtService.sign(
-      {
-        sub: user.email,
-      },
-      {
-        jwtid: v4(),
-        expiresIn: '5m',
-      },
+  async signIn(loginDto: LoginDto) {}
+  async signUp(createUserDto: CreateUserDto) {
+    const token = await lastValueFrom(
+      this.httpService
+        .post(this.configService.get('KEYCLOAK_ACCESS_TOKEN'), {
+          grant_type: 'client_credentials',
+          client_id: this.configService.get('KEYCLOAK_CLIENT_ID'),
+          client_secret: this.configService.get('KEYCLOAK_CLIENT_SECRET'),
+        })
+        .pipe(map((resp) => resp.data)),
     );
 
-    return token;
-  }
-
-  async signOut(token: string) {
-    try {
-      const decodedToken = this.jwtService.verify(token);
-      console.log(decodedToken);
-
-      return {
-        isIssued: true,
-        token: decodedToken,
-      };
-    } catch (e) {
-      return {
-        isIssued: false,
-        token: null,
-      };
-    }
-
-    //TODO add revoked token in the backlist
-  }
-
-  async validateUser(token: string) {
-    const decodedToken = this.jwtService.decode(token);
-    //????
-    const user = await this.userService.findUserByEmail(decodedToken.sub);
+    const { email, name, password } = createUserDto;
+    const user = await lastValueFrom(
+      this.httpService
+        .post<OpenIdToken>(
+          this.configService.get('KEYCLOAK_USER_URI'),
+          {
+            email,
+            firstName: name,
+            username: email,
+            enabled: true,
+            credentials: [
+              {
+                type: 'password',
+                value: password,
+                temporary: false,
+              },
+            ],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token.access_token}`,
+            },
+          },
+        )
+        .pipe(map((r) => r.data)),
+    );
+        return user;
   }
 }

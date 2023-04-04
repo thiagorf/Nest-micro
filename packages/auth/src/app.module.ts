@@ -1,31 +1,13 @@
-import { Module, CacheModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import type { RedisClientOptions } from 'redis';
-import * as redisStore from 'cache-manager-redis-store';
+import { ConfigModule } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    UserModule,
-    PrismaModule,
-    CacheModule.register<RedisClientOptions>({
-      store: redisStore,
-      host: 'localhost',
-      port: 6379,
-    }),
-    JwtModule.registerAsync({
-        imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('SECRET'),
-      }),
-      inject: [ConfigService],
-    }),
-  ],
+  imports: [ConfigModule.forRoot(), UserModule, PrismaModule, HttpModule],
   controllers: [AppController],
   providers: [AppService],
 })
