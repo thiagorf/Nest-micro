@@ -6,9 +6,9 @@ read  SC
 
 case $SC in
     post)
-        curl -d '{"email":"test@gmail.com", "firstName":"john", "lastName":"doe", "username": "joe"}' \
+        curl -d '{"email":"test@gmail.com", "name": "joe", "password":"1234"}' \
             -H "Content-type: application/json" \
-            -X POST http://localhost:8080/admin/realms/master/users ;;
+            -X POST http://localhost:3002/auth/signup ;;
     get)
         echo "Is a get command" ;;
     *)
