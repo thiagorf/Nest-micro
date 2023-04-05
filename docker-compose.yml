@@ -214,7 +214,7 @@ services:
     command: sh -c
       "npm run start:dev"
     env_file:
-      - ./packages/auth/prisma/.env.development
+      - ./packages/auth/.env.development
     volumes:
       - ./packages/auth:/usr/app
       - /usr/app/node_modules
