@@ -24,9 +24,10 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       DB_VENDOR: postgres
-      DB_PORT: 5437
+      DB_PORT: 5432
       DB_USER: kc
       DB_PASSWORD: kc
+      DB_ADDR: keycloak-database
     ports:
       - 8080:8080
     depends_on:
