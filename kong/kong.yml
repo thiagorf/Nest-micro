@@ -1,0 +1,16 @@
+_format_version: '3.0'
+_transform: true
+
+services:
+  - name: orders
+    url: http://localhost:3001/orders
+    routes:
+      - name: orders-route
+        paths:
+          - /orders
+  - name: auth
+    url: http://localhost:3002/auth
+    routes:
+      - name: auth-routes
+        paths:
+          - /auth
