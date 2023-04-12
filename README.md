@@ -4,7 +4,14 @@
 
 ## How to run
 
-WIP(Individual service setup is ok, but the whole project needs more automatization)
+`docker compose up` (sometimes is required to run this command a second time because of the startup order)
+
+check http://localhost:8080 keycloak server, sign in with the admin account, click in realms, and choose "ordering" realm, in the credentials tab take the client_secret and paste it into auth service .env file.
+
+```
+./packages/auth/.env
+KEYCLOAK_CLIENT_SECRET=
+```
 
 ## Observations
 
