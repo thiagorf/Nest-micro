@@ -8,9 +8,21 @@ services:
       - name: orders-route
         paths:
           - /orders
-  - name: auth
-    url: http://localhost:3002/auth
+  - name: signup
+    url: http://localhost:3002/auth/signup
     routes:
-      - name: auth-routes
+      - name: signup-route
         paths:
-          - /auth
+          - /signup
+  - name: signin
+    url: http://localhost:8080/realms/ordering/protocol/openid-connect/auth?response_type=code&client_id=ordering&redirect_uri=http://localhost:3002/auth/callback&scope=openid
+    routes:
+      - name: signin-route
+        paths:
+          - /signin
+  - name: signout
+    url: http://localhost:8080/realms/ordering/protocol/openid-connect/logout
+    routes:
+      - name: signout-route
+        paths:
+          - /signout
