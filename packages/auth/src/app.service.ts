@@ -20,7 +20,7 @@ export class AppService {
           {
             code,
             grant_type: 'authorization_code',
-            redirect_uri: 'http://localhost:3002/auth/callback',
+            redirect_uri: this.configService.get('KEYCLOAK_REDIRECT_URI'),
             client_id: this.configService.get('KEYCLOAK_CLIENT_ID'),
             cliebt_secret: this.configService.get('KEYCLOAK_CLIENT_SECRET'),
           },
@@ -88,18 +88,14 @@ export class AppService {
   async whoIAm(jwt: string) {
     const me = await lastValueFrom(
       this.httpService
-        .get(
-          'http://localhost:8080/admin/realms/ordering/protocol/openid-connect/userinfo',
-          {
-            headers: {
-              Authorization: `Bearer ${jwt}`,
-            },
+        .get(this.configService.get('KEYCLOAK_USERINFO_URL'), {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
           },
-        )
+        })
         .pipe(map((r) => r.data)),
     );
 
     return me;
-    
   }
 }
