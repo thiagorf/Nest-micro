@@ -28,6 +28,9 @@ services:
       DB_USER: kc
       DB_PASSWORD: kc
       DB_ADDR: keycloak-database
+      KEYCLOAK_IMPORT: /tmp/ordering.json
+    volumes:
+      - ./keycloak/ordering.json:/tmp/ordering.json
     ports:
       - 8080:8080
     depends_on:
@@ -220,13 +223,13 @@ services:
       - /usr/app/node_modules
     networks:
       - ordering
+    ports:
+      - 3002:3002
 
 networks:
   kong-net:
-    external: true
+    #external: true
   ordering:
-    driver: bridge
   kc:
-    driver: bridge
 volumes:
   kongdata:
