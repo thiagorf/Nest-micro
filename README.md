@@ -1,3 +1,7 @@
+## Diagram
+
+![project diagram](./docs/ordering-app.png)
+
 ## How to run
 
 WIP(Individual service setup is ok, but the whole project needs more automatization)
